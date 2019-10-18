@@ -35,7 +35,7 @@ imports:
 
 # Basic Configuration
 
-Exemple Entity :
+Example Entity :
 
 ```php
 <?php
