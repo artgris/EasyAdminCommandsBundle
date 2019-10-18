@@ -1,0 +1,32 @@
+{
+    "name": "artgris/easy-admin-commands-bundle",
+    "type": "symfony-bundle",
+    "description": "add commands to EasyAdminBundle for Symfony",
+    "keywords": [
+        "symfony",
+        "bundle",
+        "easyadmin",
+        "commands"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "artgris",
+            "email": "a.gribet@gmail.com"
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "php-cs-fixer": "php-cs-fixer"
+    },
+    "require": {
+        "easycorp/easyadmin-bundle": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Artgris\\Bundle\\EasyAdminCommandsBundle\\": "src/"
+        }
+    }
+}
