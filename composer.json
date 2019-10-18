@@ -1,7 +1,7 @@
 {
     "name": "artgris/easy-admin-commands-bundle",
     "type": "symfony-bundle",
-    "description": "add commands to EasyAdminBundle for Symfony",
+    "description": "EasyAdminBundle config generator",
     "keywords": [
         "symfony",
         "bundle",
