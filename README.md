@@ -139,3 +139,43 @@ easy_admin:
                     - { property: description, type_options: { attr: { class: tinymce } } }
                     - { property: date, type: date, type_options: { attr: { class: flatpickr, autocomplete: 'off' }, widget: single_text, format: dd/MM/yyyy } }
 ```
+
+## Exhaustive configuration
+
+```yaml 
+artgris_easy_admin_commands:
+    dir: '%kernel.project_dir%/config/packages/easy_admin/entities/'
+    namespaces:
+        - 'App\Entity'
+    types:
+        text:
+            type_options:
+                attr: {class: 'tinymce'}
+        image:
+            type: image
+            base_path: '%app.path.product_images%'
+    regex:
+        ^image*: image
+        ...
+        
+    list:
+        include: ['name', ...]
+        exclude: ['id', ... ]
+    form:
+        include: ['name', ...]
+        exclude: ['id', ... ]
+```
+
+**dir** : The folder in which the configuration is generated
+
+**namespaces** : Entity search namespaces
+
+**types** : If a doctrine type [metadata type](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.9/reference/types.html) is found, the generator will use the associated configuration
+
+**regex** : forces the type of an entity field according to its name and a regex
+
+**list**
+- **include** : only includes these fields in the list (if they are present in the entity)
+- **exclude** : exclude the following fields from the list (if they are present in the entity)
+    
+**form** : *same as list*
