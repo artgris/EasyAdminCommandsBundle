@@ -101,9 +101,11 @@ artgris_easy_admin_commands:
                 format: 'dd/MM/yyyy'
 
     list:
-        exclude: ['id']
+        excluded: 
+            - id
     form:
-        exclude: ['id']
+        excluded: 
+            - id
 ```
 
 ```bash
@@ -147,6 +149,8 @@ artgris_easy_admin_commands:
     dir: '%kernel.project_dir%/config/packages/easy_admin/entities/'
     namespaces:
         - 'App\Entity'
+    entities:
+        - 'App\Entity\Example'
     types:
         text:
             type_options:
@@ -159,23 +163,40 @@ artgris_easy_admin_commands:
         ...
         
     list:
-        include: ['name', ...]
-        exclude: ['id', ... ]
+        included: 
+            - name
+            - ...
+        exclude: 
+            - id
+            - ...
+        position: 
+            - name
+            - ...
     form:
-        include: ['name', ...]
-        exclude: ['id', ... ]
+        included: 
+            - name
+            - ...
+        exclude: 
+            - id
+            - ...
+        position: 
+            - name
+            - ...
 ```
 
 **dir** : The folder in which the configuration is generated
 
 **namespaces** : Entity search namespaces
 
+**entities** : Entities restriction
+
 **types** : If a doctrine type [metadata type](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.9/reference/types.html) is found, the generator will use the associated configuration
 
 **regex** : forces the type of an entity field according to its name and a regex
 
 **list**
-- **include** : only includes these fields in the list (if they are present in the entity)
-- **exclude** : exclude the following fields from the list (if they are present in the entity)
+- **included** : only includes these fields in the list (if they are present in the entity)
+- **excluded** : exclude the following fields from the list (if they are present in the entity)
+- **position** : position of fields in the list (if they are present in the entity)
     
 **form** : *same as list*
