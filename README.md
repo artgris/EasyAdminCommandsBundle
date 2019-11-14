@@ -208,7 +208,7 @@ artgris_easy_admin_commands:
 
 ## Export a specific Entity 
 
-> :warning: this command override configuration parameters entities ('included/excluded')
+> :warning: this command override the configuration parameter 'entities' ('included/excluded')
 
     php bin/console artgris:easyadmin:export 'App\Entity\Example'
     or  
