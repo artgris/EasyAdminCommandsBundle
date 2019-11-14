@@ -150,7 +150,10 @@ artgris_easy_admin_commands:
     namespaces:
         - 'App\Entity'
     entities:
-        - 'App\Entity\Example'
+        included:
+            - 'App\Entity\Example'
+        excluded:
+            - 'App\Entity\User'
     types:
         text:
             type_options:
@@ -166,7 +169,7 @@ artgris_easy_admin_commands:
         included: 
             - name
             - ...
-        exclude: 
+        excluded: 
             - id
             - ...
         position: 
@@ -176,7 +179,7 @@ artgris_easy_admin_commands:
         included: 
             - name
             - ...
-        exclude: 
+        excluded: 
             - id
             - ...
         position: 
@@ -188,7 +191,9 @@ artgris_easy_admin_commands:
 
 **namespaces** : Entity search namespaces
 
-**entities** : Entities restriction
+**entities**
+- **included** : only includes these entities
+- **excluded** : exclude the following entities
 
 **types** : If a doctrine type [metadata type](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.9/reference/types.html) is found, the generator will use the associated configuration
 
@@ -200,3 +205,11 @@ artgris_easy_admin_commands:
 - **position** : position of fields in the list (if they are present in the entity)
     
 **form** : *same as list*
+
+## Export a specific Entity 
+
+> :warning: this command override configuration parameters entities ('included/excluded')
+
+    php bin/console artgris:easyadmin:export 'App\Entity\Example'
+    or  
+    php bin/console artgris:easyadmin:export App\\Entity\\Example

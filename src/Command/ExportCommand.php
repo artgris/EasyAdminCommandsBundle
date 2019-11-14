@@ -50,45 +50,45 @@ class ExportCommand extends Command
         $this->dir = $this->artgrisConfig['dir'];
     }
 
-//    protected function configure()
-//    {
-//        $this
-//            ->addOption('entity', InputArgument::OPTIONAL, 'Class name of the entity')
-//        ;
-//    }
+    protected function configure()
+    {
+        $this
+            ->addArgument('entity', InputArgument::OPTIONAL, "Class name of the entity, override configuration parameters entities['included/excluded']");
+    }
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
         $filesystem = new Filesystem();
 
-        $filesystem->remove($this->dir);
         try {
             $filesystem->mkdir($this->dir);
         } catch (IOExceptionInterface $exception) {
-            $io->error('An error occurred while creating your directory at'.$exception->getPath());
+            $io->error('An error occurred while creating your directory at' . $exception->getPath());
         }
         $tables = $this->em->getMetadataFactory()->getAllMetadata();
 
         /** @var ClassMetadataInfo $table */
         $entities = $this->artgrisConfig['entities'];
         $namespaces = $this->artgrisConfig['namespaces'];
-
         foreach ($tables as $table) {
             if (!\in_array($table->namespace, $namespaces)) {
                 continue;
             }
-
-            if (isset($entities['includes']) && !\in_array($table->name, $entities['includes'])) {
-                continue;
-            }
-            if (isset($entities['exluded']) && \in_array($table->name, $entities['exluded'])) {
+            if (null === $entity = $input->getArgument('entity')) {
+                if (!empty($entities['included']) && !\in_array($table->name, $entities['included'])) {
+                    continue;
+                }
+                if (!empty($entities['excluded']) && \in_array($table->name, $entities['excluded'])) {
+                    continue;
+                }
+            } elseif ($table->getName() !== $entity) {
                 continue;
             }
 
             $entityData = [];
             $tableName = $table->getTableName();
-            $fileName = $this->dir.$tableName.'.yaml';
+            $fileName = $this->dir . $tableName . '.yaml';
             $entityData['class'] = $table->getName();
 
             $formFields = [];
