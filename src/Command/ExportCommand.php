@@ -5,6 +5,7 @@ namespace Artgris\Bundle\EasyAdminCommandsBundle\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -49,12 +50,17 @@ class ExportCommand extends Command
         $this->dir = $this->artgrisConfig['dir'];
     }
 
+    protected function configure()
+    {
+        $this
+            ->addArgument('entity', InputArgument::OPTIONAL, "Class name of the entity, override configuration parameters entities['included/excluded']");
+    }
+
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
         $filesystem = new Filesystem();
 
-        $filesystem->remove($this->dir);
         try {
             $filesystem->mkdir($this->dir);
         } catch (IOExceptionInterface $exception) {
@@ -63,10 +69,21 @@ class ExportCommand extends Command
         $tables = $this->em->getMetadataFactory()->getAllMetadata();
 
         /** @var ClassMetadataInfo $table */
+        $entities = $this->artgrisConfig['entities'];
+        $namespaces = $this->artgrisConfig['namespaces'];
         foreach ($tables as $table) {
-
-            if (!\in_array($table->namespace, $this->artgrisConfig['namespaces'])) {
-                break;
+            if (!\in_array($table->namespace, $namespaces)) {
+                continue;
+            }
+            if (null === $entity = $input->getArgument('entity')) {
+                if (!empty($entities['included']) && !\in_array($table->name, $entities['included'])) {
+                    continue;
+                }
+                if (!empty($entities['excluded']) && \in_array($table->name, $entities['excluded'])) {
+                    continue;
+                }
+            } elseif ($table->getName() !== $entity) {
+                continue;
             }
 
             $entityData = [];
@@ -77,11 +94,8 @@ class ExportCommand extends Command
             $formFields = [];
             $fieldNames = $table->fieldNames;
 
+            $formFieldsForm = $this->sortFields($this->fieldsHandler($fieldNames, 'form'), $this->artgrisConfig['form']['position']);
 
-            $formFieldsForm = $this->fieldsHandler($fieldNames, 'form');
-            if (\array_key_exists('position', $fieldNames)) {
-                $entityData['list']['sort'] = ['position', 'asc'];
-            }
             foreach ($formFieldsForm as $fieldName) {
                 $field = $table->fieldMappings[$fieldName];
 
@@ -101,7 +115,9 @@ class ExportCommand extends Command
                 }
             }
 
-            $entityData['list']['fields'] = $this->fieldsHandler($fieldNames, 'list');
+            $sortedListFields = $this->sortFields($this->fieldsHandler($fieldNames, 'list'), $this->artgrisConfig['list']['position']);
+
+            $entityData['list']['fields'] = $sortedListFields;
             $entityData['form'] = ['fields' => $formFields];
             $entityData['edit'] = ['fields' => $formFields];
             $entityData['new'] = ['fields' => $formFields];
@@ -109,14 +125,20 @@ class ExportCommand extends Command
             $data = ['easy_admin' => ['entities' => [$tableName => $entityData]]];
             $yaml = Yaml::dump($data, 6);
             file_put_contents($fileName, $yaml);
+            $filesystem->touch($fileName, time() + 1);
         }
         $io->success('Export completed!');
     }
 
     private function fieldsHandler(array $fieldNames, string $view)
     {
-        $includeFields = $this->artgrisConfig[$view]['include'] ? array_intersect($fieldNames, $this->artgrisConfig[$view]['include']) : $fieldNames;
+        $includeFields = $this->artgrisConfig[$view]['included'] ? array_intersect($fieldNames, $this->artgrisConfig[$view]['included']) : $fieldNames;
 
-        return array_values(array_diff($includeFields, $this->artgrisConfig[$view]['exclude']));
+        return array_values(array_diff($includeFields, $this->artgrisConfig[$view]['excluded']));
+    }
+
+    private function sortFields($fields, $positions)
+    {
+        return array_unique(array_merge(array_intersect($positions, $fields), $fields));
     }
 }

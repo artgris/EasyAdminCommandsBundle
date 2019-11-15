@@ -1,7 +1,5 @@
 # EasyAdmin Commands
 
-> work in progress
-
 ## Installation
 
 ```bash
@@ -101,9 +99,11 @@ artgris_easy_admin_commands:
                 format: 'dd/MM/yyyy'
 
     list:
-        exclude: ['id']
+        excluded: 
+            - id
     form:
-        exclude: ['id']
+        excluded: 
+            - id
 ```
 
 ```bash
@@ -147,6 +147,11 @@ artgris_easy_admin_commands:
     dir: '%kernel.project_dir%/config/packages/easy_admin/entities/'
     namespaces:
         - 'App\Entity'
+    entities:
+        included:
+            - 'App\Entity\Example'
+        excluded:
+            - 'App\Entity\User'
     types:
         text:
             type_options:
@@ -159,23 +164,50 @@ artgris_easy_admin_commands:
         ...
         
     list:
-        include: ['name', ...]
-        exclude: ['id', ... ]
+        included: 
+            - name
+            - ...
+        excluded: 
+            - id
+            - ...
+        position: 
+            - name
+            - ...
     form:
-        include: ['name', ...]
-        exclude: ['id', ... ]
+        included: 
+            - name
+            - ...
+        excluded: 
+            - id
+            - ...
+        position: 
+            - name
+            - ...
 ```
 
 **dir** : The folder in which the configuration is generated
 
 **namespaces** : Entity search namespaces
 
+**entities**
+- **included** : only includes these entities
+- **excluded** : exclude the following entities
+
 **types** : If a doctrine type [metadata type](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.9/reference/types.html) is found, the generator will use the associated configuration
 
 **regex** : forces the type of an entity field according to its name and a regex
 
 **list**
-- **include** : only includes these fields in the list (if they are present in the entity)
-- **exclude** : exclude the following fields from the list (if they are present in the entity)
+- **included** : only includes these fields in the list (if they are present in the entity)
+- **excluded** : exclude the following fields from the list (if they are present in the entity)
+- **position** : position of fields in the list (if they are present in the entity)
     
 **form** : *same as list*
+
+## Export a specific Entity 
+
+> :warning: this command override the configuration parameter 'entities' ('included/excluded')
+
+    php bin/console artgris:easyadmin:export 'App\Entity\Example'
+    or  
+    php bin/console artgris:easyadmin:export App\\Entity\\Example

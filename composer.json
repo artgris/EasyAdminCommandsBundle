@@ -28,5 +28,9 @@
         "psr-4": {
             "Artgris\\Bundle\\EasyAdminCommandsBundle\\": "src/"
         }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.15",
+        "pedrotroller/php-cs-custom-fixer": "^2.19"
     }
 }
