@@ -1,7 +1,5 @@
 # EasyAdmin Commands
 
-> work in progress
-
 ## Installation
 
 ```bash
