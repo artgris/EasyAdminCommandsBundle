@@ -92,12 +92,12 @@ class ExportCommand extends Command
             $entityData['class'] = $table->getName();
 
             $formFields = [];
-            $fieldNames = $table->fieldNames;
-
+            $fieldNames = array_merge($table->fieldNames, array_combine($table->getAssociationNames(), $table->getAssociationNames()));
             $formFieldsForm = $this->sortFields($this->fieldsHandler($fieldNames, 'form'), $this->artgrisConfig['form']['position']);
-
+            
             foreach ($formFieldsForm as $fieldName) {
-                $field = $table->fieldMappings[$fieldName];
+
+                $field = $table->fieldMappings[$fieldName] ?? $table->associationMappings[$fieldName];
 
                 // gestion en regex:
                 foreach ($this->artgrisConfig['regex'] as $regex => $type) {
