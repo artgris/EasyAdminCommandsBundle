@@ -122,7 +122,7 @@ class ExportCommand extends Command
             $entityData['edit'] = ['fields' => $formFields];
             $entityData['new'] = ['fields' => $formFields];
 
-            $data = ['easy_admin' => ['entities' => [$tableName => $entityData]]];
+            $data = ['easy_admin' => ['entities' => [ucfirst($tableName) => $entityData]]];
             $yaml = Yaml::dump($data, 6);
             file_put_contents($fileName, $yaml);
             $filesystem->touch($fileName, time() + 1);
