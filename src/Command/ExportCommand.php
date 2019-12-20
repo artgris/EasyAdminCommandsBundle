@@ -64,7 +64,7 @@ class ExportCommand extends Command
         try {
             $filesystem->mkdir($this->dir);
         } catch (IOExceptionInterface $exception) {
-            $io->error('An error occurred while creating your directory at' . $exception->getPath());
+            $io->error('An error occurred while creating your directory at'.$exception->getPath());
         }
         $tables = $this->em->getMetadataFactory()->getAllMetadata();
 
@@ -88,15 +88,14 @@ class ExportCommand extends Command
 
             $entityData = [];
             $tableName = $table->getTableName();
-            $fileName = $this->dir . $tableName . '.yaml';
+            $fileName = $this->dir.$tableName.'.yaml';
             $entityData['class'] = $table->getName();
 
             $formFields = [];
             $fieldNames = array_merge($table->fieldNames, array_combine($table->getAssociationNames(), $table->getAssociationNames()));
             $formFieldsForm = $this->sortFields($this->fieldsHandler($fieldNames, 'form'), $this->artgrisConfig['form']['position']);
-            
-            foreach ($formFieldsForm as $fieldName) {
 
+            foreach ($formFieldsForm as $fieldName) {
                 $field = $table->fieldMappings[$fieldName] ?? $table->associationMappings[$fieldName];
 
                 // gestion en regex:
@@ -116,8 +115,15 @@ class ExportCommand extends Command
             }
 
             $sortedListFields = $this->sortFields($this->fieldsHandler($fieldNames, 'list'), $this->artgrisConfig['list']['position']);
-
             $entityData['list']['fields'] = $sortedListFields;
+
+            if (isset($this->artgrisConfig['list']['sort'])) {
+                $sortedList = $this->sortList($this->fieldsHandler($fieldNames, 'list'), $this->artgrisConfig['list']['sort']);
+                if ($sortedList) {
+                    $entityData['list'] = ['sort' => $sortedList];
+                }
+            }
+
             $entityData['form'] = ['fields' => $formFields];
             $entityData['edit'] = ['fields' => $formFields];
             $entityData['new'] = ['fields' => $formFields];
@@ -139,6 +145,15 @@ class ExportCommand extends Command
 
     private function sortFields($fields, $positions)
     {
-        return array_unique(array_merge(array_intersect($positions, $fields), $fields));
+        return array_values(array_unique(array_merge(array_intersect($positions, $fields), $fields)));
+    }
+
+    private function sortList(array $fieldsHandler, $sortFields)
+    {
+        foreach ($sortFields as $sortField) {
+            if (\in_array($sortField[0], $fieldsHandler)) {
+                return $sortField;
+            }
+        }
     }
 }

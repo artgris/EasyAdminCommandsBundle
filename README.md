@@ -173,6 +173,9 @@ artgris_easy_admin_commands:
         position: 
             - name
             - ...
+        sort:
+            - ['createdAt', 'desc']
+            - ...
     form:
         included: 
             - name
@@ -201,6 +204,7 @@ artgris_easy_admin_commands:
 - **included** : only includes these fields in the list (if they are present in the entity)
 - **excluded** : exclude the following fields from the list (if they are present in the entity)
 - **position** : position of fields in the list (if they are present in the entity)
+- **sort** : sort by following fields (first found in list)
     
 **form** : *same as list*
 
