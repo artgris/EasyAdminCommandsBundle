@@ -120,7 +120,7 @@ class ExportCommand extends Command
             if (isset($this->artgrisConfig['list']['sort'])) {
                 $sortedList = $this->sortList($this->fieldsHandler($fieldNames, 'list'), $this->artgrisConfig['list']['sort']);
                 if ($sortedList) {
-                    $entityData['list'] = ['sort' => $sortedList];
+                    $entityData['list']['sort'] = $sortedList;
                 }
             }
 
